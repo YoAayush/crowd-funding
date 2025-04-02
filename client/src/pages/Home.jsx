@@ -8,6 +8,9 @@ const Home = () => {
   const [campaigns, setCampaigns] = useState([]);
 
   const { address, contract, getCampaigns } = useStateContext();
+  // console.log("Address:", address);
+  // console.log("Contract:", contract);
+  // console.log("Campaigns:", campaigns);
 
   const fetchCampaigns = async () => {
     setIsLoading(true);

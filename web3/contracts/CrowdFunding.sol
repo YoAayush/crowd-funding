@@ -12,6 +12,7 @@ contract CrowdFunding {
         string image;
         address[] donators;
         uint256[] donations;
+        bool isDeleted;
     }
 
     mapping(uint256 => Campaign) public campaigns;
@@ -66,5 +67,13 @@ contract CrowdFunding {
         }
 
         return allCampaigns;
+    }
+
+    function deleteCampaign(uint256 _id) public {
+        Campaign storage campaign = campaigns[_id];
+        require(msg.sender == campaign.owner, "Only the owner can delete this campaign.");
+        require(!campaign.isDeleted, "Campaign is already deleted.");
+
+        campaign.isDeleted = true; // NEW: Mark as deleted
     }
 }

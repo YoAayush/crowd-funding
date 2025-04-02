@@ -27,7 +27,7 @@ root.render(
   <ThirdwebProvider
   clientId="38dd3a5c807472d5dad1ec81d156ac0b"
   supportedChains={[holeskyChain]}
-  activeChain={holeskyChain}
+  activeChain={holeskyChain.chainId}
   >
     <Router>
       <StateContextProvider>

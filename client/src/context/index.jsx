@@ -1,10 +1,11 @@
-import React, { useContext, createContext } from "react";
+import React, { useContext, createContext, useEffect } from "react";
 import {
   useAddress,
   useContract,
   useConnect,
   useContractWrite,
   metamaskWallet,
+  useDisconnect,
 } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
 
@@ -16,9 +17,9 @@ export const StateContextProvider = ({ children }) => {
     "0x29d3bc4c993b5f9dcfca4b84f68eed8a4ca4c1d7"
   );
 
-  if (isLoading) {
-    console.log("Contract is still loading...");
-  }
+  // if (isLoading) {
+  //   console.log("Contract is still loading...");
+  // }
 
   // Get function hooks
   const { mutateAsync: createCampaign } = useContractWrite(
@@ -26,11 +27,25 @@ export const StateContextProvider = ({ children }) => {
     "createCampaign"
   );
 
-  console.log("Contract address:", contract?.getAddress?.());
-  console.log("Is contract loading:", isLoading);
+  const { mutateAsync: deleteCampaign } = useContractWrite(
+    contract,
+    "deleteCampaign"
+  );
+
+  // console.log("Create campaign function:", createCampaign);
+
+  // console.log("Contract address:", contract?.getAddress?.());
+  // console.log("Is contract loading:", isLoading);
+
+  const connect = useConnect();
+  const connectWallet = () => {
+    connect(metamaskWallet());
+  };
+  // console.log("Connect function:", connect);
 
   const address = useAddress();
-  const connect = useConnect(metamaskWallet());
+
+  const disconnect = useDisconnect();
 
   // Publish a new campaign
   const publishCampaign = async (form) => {
@@ -123,17 +138,28 @@ export const StateContextProvider = ({ children }) => {
     return parsedDonations;
   };
 
+  const handleDelete = async (pId) => {
+    try {
+      await deleteCampaign({ args: [pId] });
+      console.log("Campaign deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting campaign:", error);
+    }
+  };
+
   return (
     <StateContext.Provider
       value={{
         address,
         contract,
-        connect,
+        connectWallet,
         createCampaign: publishCampaign,
         getCampaigns,
         getUserCampaigns,
         donate,
         getDonations,
+        disconnect,
+        handleDelete,
       }}
     >
       {children}
