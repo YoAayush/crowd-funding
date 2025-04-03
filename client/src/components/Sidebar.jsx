@@ -3,11 +3,20 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { logo, sun } from "../assets";
 import { navlinks } from "../constants";
+import { useStateContext } from "../context";
 
-const Icon = ({ styles, name, imgUrl, isActive, disabled, handleClick }) => (
+const Icon = ({
+  styles,
+  name,
+  imgUrl,
+  isActive,
+  disabled,
+  handleClick,
+  theme,
+}) => (
   <div
     className={`w-[48px] h-[48px] rounded-[10px] ${
-      isActive && isActive === name && "bg-[#2c2f32]"
+      isActive && isActive === name && "bg-[#676e75]"
     } flex justify-center items-center ${
       !disabled && "cursor-pointer"
     } ${styles}`}
@@ -30,6 +39,8 @@ const Sidebar = () => {
   const location = window.location.pathname;
   const [isActive, setIsActive] = useState("dashboard");
 
+  const { theme, setTheme } = useStateContext();
+
   useEffect(() => {
     // console.log("Current location:", location);
     const activeLink = navlinks.find((link) => link.link === location);
@@ -42,15 +53,22 @@ const Sidebar = () => {
   return (
     <div className="flex justify-between items-center flex-col sticky top-5 h-[93vh]">
       <Link to="/">
-        <Icon styles="w-[52px] h-[52px] bg-[#2c2f32]" imgUrl={logo} />
+        <div className="w-[80px] h-[80px] flex justify-center items-center">
+          <img src={logo} alt="logo" className="w-full h-full object-contain" />
+        </div>
       </Link>
 
-      <div className="flex-1 flex flex-col justify-between items-center bg-[#1c1c24] rounded-[20px] w-[76px] py-4 mt-12">
+      <div
+        className={`flex-1 flex flex-col justify-between items-center ${
+          theme === "dark" ? "bg-[#1c1c24]" : "bg-gray-200"
+        } rounded-[20px] w-[76px] py-4 mt-8`}
+      >
         <div className="flex flex-col justify-center items-center gap-3">
           {navlinks.map((link) => (
             <Icon
               key={link.name}
               {...link}
+              theme={theme}
               isActive={isActive}
               handleClick={() => {
                 if (!link.disabled) {
@@ -62,7 +80,12 @@ const Sidebar = () => {
           ))}
         </div>
 
-        <Icon styles="bg-[#1c1c24] shadow-secondary" imgUrl={sun} />
+        <button
+          onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+          className="p-2 rounded transition-all"
+        >
+          {theme === "light" ? "🌙" : "☀️"}
+        </button>
       </div>
     </div>
   );

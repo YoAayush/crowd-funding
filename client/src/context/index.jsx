@@ -1,4 +1,4 @@
-import React, { useContext, createContext, useEffect } from "react";
+import React, { useContext, createContext, useEffect, useState } from "react";
 import {
   useAddress,
   useContract,
@@ -14,7 +14,8 @@ const StateContext = createContext();
 export const StateContextProvider = ({ children }) => {
   // Initialize contract
   const { contract, isLoading } = useContract(
-    "0x29d3bc4c993b5f9dcfca4b84f68eed8a4ca4c1d7"
+    "0xac6c682cb189166de5bdd0aa7496335eeff97702"
+    // "0x29d3bc4c993b5f9dcfca4b84f68eed8a4ca4c1d7"
   );
 
   // if (isLoading) {
@@ -52,8 +53,8 @@ export const StateContextProvider = ({ children }) => {
     if (!contract) return console.error("Contract is not initialized.");
     if (!address) return alert("Please connect your wallet.");
     console.log("Publishing campaign...");
-    console.log("Form data:", form);
-    console.log("Address:", address);
+    // console.log("Form data:", form);
+    // console.log("Address:", address);
 
     if (!createCampaign) {
       console.error("createCampaign is not initialized.");
@@ -93,6 +94,7 @@ export const StateContextProvider = ({ children }) => {
       ),
       image: campaign.image,
       pId: i,
+      isDeleted: campaign.isDeleted,
     }));
 
     return parsedCampaigns;
@@ -147,6 +149,16 @@ export const StateContextProvider = ({ children }) => {
     }
   };
 
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
+
+  useEffect(() => {
+    // document.body.classList.remove("light", "dark");
+    // document.body.classList.add(theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
   return (
     <StateContext.Provider
       value={{
@@ -160,6 +172,10 @@ export const StateContextProvider = ({ children }) => {
         getDonations,
         disconnect,
         handleDelete,
+        setSearchQuery,
+        searchQuery,
+        theme,
+        setTheme,
       }}
     >
       {children}
