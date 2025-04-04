@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 import { tagType, thirdweb } from "../assets";
 import { daysLeft } from "../utils";
+import { useStateContext } from "../context";
 
 const FundCard = ({
   owner,
@@ -13,8 +14,10 @@ const FundCard = ({
   image,
   handleClick,
   pId,
-  handleCampaignDelete
+  handleCampaignDelete,
 }) => {
+  const { theme } = useStateContext();
+
   // console.log("isDeleted:", isDeleted);
   const remainingDays = daysLeft(deadline);
   const isExpired = remainingDays <= 0;
@@ -42,7 +45,11 @@ const FundCard = ({
 
   return (
     <>
-      <div className={`sm:w-[288px] w-full rounded-[15px] ${theme === "dark" ? "bg-[#1c1c24]" : "bg-gray-400"} cursor-pointer`}>
+      <div
+        className={`sm:w-[288px] w-full rounded-[15px] ${
+          theme === "dark" ? "bg-[#1c1c24]" : "bg-gray-400"
+        } cursor-pointer`}
+      >
         <img
           src={image}
           alt="fund"
