@@ -16,7 +16,7 @@ const FundCard = ({
   pId,
   handleCampaignDelete,
 }) => {
-  const { theme } = useStateContext();
+  const { address, theme } = useStateContext();
 
   // console.log("isDeleted:", isDeleted);
   const remainingDays = daysLeft(deadline);
@@ -124,7 +124,7 @@ const FundCard = ({
             </button>
 
             {/* Show Delete button only for owner */}
-            {owner === "0xA058c16d85A4Bc2E27DEEd50A2376D2f517B0233" && (
+            {owner === address && (
               <button
                 className="px-4 py-2 bg-red-500 hover:bg-red-700 rounded-lg"
                 onClick={() => handleCampaignDelete(pId)}

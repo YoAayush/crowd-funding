@@ -12,10 +12,22 @@ import { ethers } from "ethers";
 const StateContext = createContext();
 
 export const StateContextProvider = ({ children }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  // useEffect(() => {
+  //   console.log("modal state changed:", isModalOpen);
+  // }, [isModalOpen]);
+
   // Initialize contract
   const { contract, isLoading } = useContract(
-    "0xac6c682cb189166de5bdd0aa7496335eeff97702"
-    // "0x29d3bc4c993b5f9dcfca4b84f68eed8a4ca4c1d7"
+    import.meta.env.VITE_CONTRACT_ADDRESS
   );
 
   // if (isLoading) {
@@ -41,10 +53,13 @@ export const StateContextProvider = ({ children }) => {
   const connect = useConnect();
   const connectWallet = () => {
     connect(metamaskWallet());
+    openModal();
   };
   // console.log("Connect function:", connect);
 
   const address = useAddress();
+
+  // console.log("Connected address:", address);
 
   const disconnect = useDisconnect();
 
@@ -64,6 +79,7 @@ export const StateContextProvider = ({ children }) => {
       const targetInEther = form.target.toString(); // Ensure it's a string
       const data = await createCampaign({
         args: [
+          form.name, // name
           address, // owner
           form.title, // title
           form.description, // description
@@ -176,6 +192,9 @@ export const StateContextProvider = ({ children }) => {
         searchQuery,
         theme,
         setTheme,
+        isModalOpen,
+        closeModal,
+        openModal,
       }}
     >
       {children}
