@@ -8,10 +8,13 @@ import {
   useDisconnect,
 } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
+import { createClient } from "@supabase/supabase-js";
+import { useNavigate } from "react-router-dom";
 
 const StateContext = createContext();
 
 export const StateContextProvider = ({ children }) => {
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const closeModal = () => {
@@ -51,15 +54,45 @@ export const StateContextProvider = ({ children }) => {
   // console.log("Is contract loading:", isLoading);
 
   const connect = useConnect();
+  const address = useAddress();
+  console.log("Connected address:", address);
+
   const connectWallet = () => {
     connect(metamaskWallet());
-    openModal();
   };
-  // console.log("Connect function:", connect);
 
-  const address = useAddress();
+  useEffect(() => {
+    if (!address) return;
 
-  // console.log("Connected address:", address);
+    try {
+      const fetchUserProfile = async () => {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("wallet", address)
+          .single();
+
+        if (error) {
+          console.error("Error fetching profile:", error.message);
+        } else {
+          // console.log("User profile data:", data);
+          return true; // Profile exists
+        }
+      };
+
+      fetchUserProfile().then((profileExists) => {
+        if (profileExists) {
+          console.log("User profile already exists.");
+          navigate("/profile")
+        } else {
+          openModal(); // Open modal to create a new profile
+          console.log("User profile does not exist. Opening modal.");
+        }
+      });
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+    }
+  }, [address]);
 
   const disconnect = useDisconnect();
 
@@ -175,6 +208,13 @@ export const StateContextProvider = ({ children }) => {
     localStorage.setItem("theme", theme);
   }, [theme]);
 
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  // const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  const supabaseKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
+
+  const supabase = createClient(supabaseUrl, supabaseKey);
+  // console.log("Supabase client:", supabase);
+
   return (
     <StateContext.Provider
       value={{
@@ -195,6 +235,7 @@ export const StateContextProvider = ({ children }) => {
         isModalOpen,
         closeModal,
         openModal,
+        supabase,
       }}
     >
       {children}

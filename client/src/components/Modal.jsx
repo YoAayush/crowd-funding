@@ -1,22 +1,75 @@
 import React, { useState } from "react";
 import { useStateContext } from "../context";
 import { useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid"; // for unique image name
 
 const Modal = () => {
-  const { closeModal } = useStateContext();
+  const { closeModal, supabase, address } = useStateContext();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [profile, setProfile] = useState({
+    name: "",
+    bio: "",
+    location: "",
+    twitter: "",
+    profilePicture: null, // now holds a File object
+  });
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    if (name === "profilePicture") {
+      setProfile((prev) => ({ ...prev, profilePicture: files[0] }));
+    } else {
+      setProfile((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    setTimeout(() => {
+    let imageUrl = "";
+
+    if (profile.profilePicture) {
+      const fileExt = profile.profilePicture.name.split(".").pop();
+      const fileName = `${uuidv4()}.${fileExt}`;
+      const { data, error: uploadError } = await supabase.storage
+        .from("profile-images")
+        .upload(fileName, profile.profilePicture);
+
+      if (uploadError) {
+        console.error("Upload error:", uploadError.message);
+        setLoading(false);
+        return;
+      }
+
+      const { data: urlData } = supabase.storage
+        .from("profile-images")
+        .getPublicUrl(fileName);
+      imageUrl = urlData.publicUrl;
+    }
+
+    const { error } = await supabase.from("profiles").insert([
+      {
+        name: profile.name,
+        bio: profile.bio,
+        location: profile.location,
+        twitter: profile.twitter,
+        profile_image: imageUrl,
+        wallet: address,
+      },
+    ]);
+
+    if (error) {
+      console.error("Insert error:", error.message);
       setLoading(false);
-      alert("Profile updated successfully!");
-      closeModal();
-      navigate("/profile");
-    }, 5000); // 5 seconds = 5000ms
+      return;
+    }
+
+    setLoading(false);
+    alert("Profile updated successfully!");
+    closeModal();
+    navigate("/profile");
   };
 
   return (
@@ -37,26 +90,45 @@ const Modal = () => {
         <form className="space-y-5" onSubmit={handleSubmit}>
           <input
             type="text"
+            name="name"
             placeholder="Your Name"
-            className="w-full px-4 py-3 bg-[#1f1f1f] text-white rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
+            value={profile.name}
+            onChange={handleChange}
             required
+            className="w-full px-4 py-3 bg-[#1f1f1f] text-white rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
           />
           <textarea
+            name="bio"
             placeholder="Bio"
             rows="3"
+            value={profile.bio}
+            onChange={handleChange}
+            required
             className="w-full px-4 py-3 bg-[#1f1f1f] text-white rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200 resize-none"
-            required
           />
           <input
             type="text"
+            name="location"
             placeholder="Location"
-            className="w-full px-4 py-3 bg-[#1f1f1f] text-white rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
+            value={profile.location}
+            onChange={handleChange}
             required
+            className="w-full px-4 py-3 bg-[#1f1f1f] text-white rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
           />
           <input
             type="text"
+            name="twitter"
             placeholder="Twitter Handle"
+            value={profile.twitter}
+            onChange={handleChange}
             className="w-full px-4 py-3 bg-[#1f1f1f] text-white rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
+          />
+          <input
+            type="file"
+            name="profilePicture"
+            accept="image/*"
+            onChange={handleChange}
+            className="w-full text-white"
           />
 
           <button
