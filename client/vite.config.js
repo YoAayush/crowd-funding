@@ -6,6 +6,9 @@ import { nodePolyfills } from "vite-plugin-node-polyfills";
 export default defineConfig({
   plugins: [react(), nodePolyfills()],
   build: {
+    rollupOptions: {
+      external: ['@safe-global/safe-ethers-adapters'],
+    },
     target: 'es2020', // Ensure Vite supports BigInt
     commonjsOptions: {
       include: [/node_modules/], // Force transpiling node_modules
