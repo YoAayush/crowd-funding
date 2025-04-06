@@ -9,9 +9,12 @@
     "deploy": "yarn build && npx thirdweb@latest upload dist"
   },
   "dependencies": {
+    "@safe-global/safe-ethers-adapters": "0.1.0-alpha.19",
     "@supabase/supabase-js": "^2.49.4",
+    "@thirdweb-dev/auth": "^4.1.97",
     "@thirdweb-dev/contracts": "^3.15.0",
-    "@thirdweb-dev/react": "^3.16.5",
+    "@thirdweb-dev/react": "^4.9.4",
+    "@thirdweb-dev/react-core": "^4.9.4",
     "@thirdweb-dev/sdk": "^3.10.67",
     "@thirdweb-dev/wallets": "^2.5.39",
     "ethers": "^5.8.0",
