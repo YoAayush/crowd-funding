@@ -15,7 +15,7 @@
     "@thirdweb-dev/contracts": "^3.15.0",
     "@thirdweb-dev/react": "^4.9.4",
     "@thirdweb-dev/react-core": "^4.9.4",
-    "@thirdweb-dev/sdk": "^3.10.67",
+    "@thirdweb-dev/sdk": "^4.0.99",
     "@thirdweb-dev/wallets": "^2.5.39",
     "ethers": "^5.8.0",
     "react": "^18.3.1",
