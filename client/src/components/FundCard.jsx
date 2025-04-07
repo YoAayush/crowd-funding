@@ -5,6 +5,7 @@ import { daysLeft } from "../utils";
 import { useStateContext } from "../context";
 
 const FundCard = ({
+  ownerName,
   owner,
   title,
   description,
@@ -54,6 +55,7 @@ const FundCard = ({
           src={image}
           alt="fund"
           className="w-full h-[158px] object-cover rounded-[15px]"
+          onClick={handleClick}
         />
 
         <div className="flex flex-col p-4">

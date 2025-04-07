@@ -83,7 +83,7 @@ export const StateContextProvider = ({ children }) => {
       fetchUserProfile().then((profileExists) => {
         if (profileExists) {
           console.log("User profile already exists.");
-          navigate("/profile")
+          navigate("/profile");
         } else {
           openModal(); // Open modal to create a new profile
           console.log("User profile does not exist. Opening modal.");
@@ -101,7 +101,7 @@ export const StateContextProvider = ({ children }) => {
     if (!contract) return console.error("Contract is not initialized.");
     if (!address) return alert("Please connect your wallet.");
     console.log("Publishing campaign...");
-    // console.log("Form data:", form);
+    console.log("Form data:", form);
     // console.log("Address:", address);
 
     if (!createCampaign) {
@@ -109,14 +109,15 @@ export const StateContextProvider = ({ children }) => {
       return;
     }
     try {
-      const targetInEther = form.target.toString(); // Ensure it's a string
+      // const targetInEther = form.target.toString(); // Ensure it's a string
       const data = await createCampaign({
         args: [
-          form.ownerName, // name
-          address, // owner
+          address, // owner address
+          form.ownerName, // onwer name
           form.title, // title
           form.description, // description
-          ethers.utils.parseEther(targetInEther), // target (formatted)
+          // ethers.utils.parseEther(targetInEther), // target (formatted)
+          form.target, // target (in ETHer)
           Math.floor(new Date(form.deadline).getTime() / 1000), // Convert to seconds
           form.image,
         ],
@@ -216,6 +217,24 @@ export const StateContextProvider = ({ children }) => {
   const supabase = createClient(supabaseUrl, supabaseKey);
   // console.log("Supabase client:", supabase);
 
+  const fetchProfile = async () => {
+    if (!address) return;
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("wallet", address)
+      .single();
+
+    // console.log("Profile data:", data);
+
+    if (error) {
+      console.error("Error fetching profile:", error.message);
+    }
+
+    return data;
+  };
+
   return (
     <StateContext.Provider
       value={{
@@ -237,6 +256,7 @@ export const StateContextProvider = ({ children }) => {
         closeModal,
         openModal,
         supabase,
+        fetchProfile,
       }}
     >
       {children}

@@ -9,7 +9,7 @@ import DeleteLoader from "./DeleteLoader";
 const DisplayCampaigns = ({ title, isLoading, campaigns }) => {
   const navigate = useNavigate();
   const [isDeleting, setIsDeleting] = useState(false);
-  const { handleDelete, searchQuery, theme } = useStateContext();
+  const { handleDelete, searchQuery, theme, fetchProfile } = useStateContext();
   const handleNavigate = (campaign) => {
     navigate(`/campaign-details/${campaign.title}`, { state: campaign });
   };
@@ -59,7 +59,11 @@ const DisplayCampaigns = ({ title, isLoading, campaigns }) => {
     <>
       {isDeleting && <DeleteLoader />}
       <div>
-        <h1 className={`font-epilogue font-semibold text-[18px] ${theme === "dark" ? "text-white" : "text-[#13131a]"} text-left`}>
+        <h1
+          className={`font-epilogue font-semibold text-[18px] ${
+            theme === "dark" ? "text-white" : "text-[#13131a]"
+          } text-left`}
+        >
           {title} (
           {filteredCampaigns.length > 0
             ? filteredCampaigns.length
@@ -91,7 +95,7 @@ const DisplayCampaigns = ({ title, isLoading, campaigns }) => {
                 <FundCard
                   key={uuidv4()}
                   {...campaign}
-                  handleCampaignDelete= {handleDeleteClick}
+                  handleCampaignDelete={handleDeleteClick}
                   handleDelete={() => handleDelete(campaign.pId)}
                   handleClick={() => handleNavigate(campaign)}
                 />

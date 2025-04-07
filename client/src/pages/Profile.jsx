@@ -3,7 +3,7 @@ import { DisplayCampaigns } from "../components";
 import { useStateContext } from "../context";
 
 const Profile = () => {
-  const { address, contract, getUserCampaigns, theme, supabase } =
+  const { address, contract, getUserCampaigns, theme, fetchProfile } =
     useStateContext();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -17,28 +17,11 @@ const Profile = () => {
     setIsLoading(false);
   };
 
-  const fetchProfile = async () => {
-    if (!address) return;
-
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("wallet", address)
-      .single();
-
-    // console.log("Profile data:", data);
-
-    if (error) {
-      console.error("Error fetching profile:", error.message);
-    } else {
-      setProfile(data);
-    }
-  };
-
   useEffect(() => {
     async function fetchData() {
       await fetchCampaigns();
-      await fetchProfile();
+      const data = await fetchProfile();
+      setProfile(data);
     }
     fetchData();
   }, [address, contract]);
