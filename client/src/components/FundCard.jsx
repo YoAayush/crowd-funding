@@ -105,7 +105,7 @@ const FundCard = ({
               />
             </div>
             <p className="flex-1 font-epilogue font-normal text-[12px] text-[#808191] truncate">
-              by <span className="text-[#b2b3bd]">{owner}</span>
+              by <span className="text-[#b2b3bd]">{ownerName}</span>
             </p>
           </div>
 

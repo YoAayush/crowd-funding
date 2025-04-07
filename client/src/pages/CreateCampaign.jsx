@@ -13,7 +13,7 @@ const CreateCampaign = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { createCampaign, theme } = useStateContext();
   const [form, setForm] = useState({
-    name: '',
+    ownerName: '',
     title: '',
     description: '',
     target: '', 
@@ -55,7 +55,7 @@ const CreateCampaign = () => {
             placeholder="John Doe"
             inputType="text"
             value={form.name}
-            handleChange={(e) => handleFormFieldChange('name', e)}
+            handleChange={(e) => handleFormFieldChange('ownerName', e)}
           />
           <FormField 
             labelName="Campaign Title *"

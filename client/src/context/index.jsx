@@ -55,7 +55,7 @@ export const StateContextProvider = ({ children }) => {
 
   const connect = useConnect();
   const address = useAddress();
-  console.log("Connected address:", address);
+  // console.log("Connected address:", address);
 
   const connectWallet = () => {
     connect(metamaskWallet());
@@ -112,7 +112,7 @@ export const StateContextProvider = ({ children }) => {
       const targetInEther = form.target.toString(); // Ensure it's a string
       const data = await createCampaign({
         args: [
-          form.name, // name
+          form.ownerName, // name
           address, // owner
           form.title, // title
           form.description, // description
@@ -133,6 +133,7 @@ export const StateContextProvider = ({ children }) => {
     const campaigns = await contract.call("getCampaigns");
 
     const parsedCampaigns = campaigns.map((campaign, i) => ({
+      ownerName: campaign.ownerName,
       owner: campaign.owner,
       title: campaign.title,
       description: campaign.description,
