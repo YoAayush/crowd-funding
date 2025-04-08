@@ -5,10 +5,13 @@ import { logo, sun } from "../assets";
 import { navlinks } from "../constants";
 import { useStateContext } from "../context";
 
+import { MdSunny } from "react-icons/md";
+import { IoMdMoon } from "react-icons/io";
+
 const Icon = ({
   styles,
   name,
-  imgUrl,
+  imgUrl: IconComponent,
   isActive,
   disabled,
   handleClick,
@@ -22,11 +25,16 @@ const Icon = ({
     } ${styles}`}
     onClick={handleClick}
   >
-    {!isActive ? (
-      <img src={imgUrl} alt="fund_logo" className="w-1/2 h-1/2" />
+    {IconComponent && typeof IconComponent === "function" ? (
+      <IconComponent
+        className={`w-1/2 h-1/2 ${
+          isActive !== name ? "text-gray-400" : "text-white"
+        }`}
+        size={24}
+      />
     ) : (
       <img
-        src={imgUrl}
+        src={IconComponent}
         alt="fund_logo"
         className={`w-1/2 h-1/2 ${isActive !== name && "grayscale"}`}
       />
@@ -60,12 +68,13 @@ const Sidebar = () => {
 
       <div
         className={`flex-1 flex flex-col justify-between items-center ${
-          theme === "dark" ? "bg-[#1c1c24]" : "bg-gray-200"
+          theme === "dark" ? "bg-[#1c1c24]" : "bg-[#C8BCFF]"
         } rounded-[20px] w-[76px] py-4 mt-8`}
       >
         <div className="flex flex-col justify-center items-center gap-3">
           {navlinks.map((link) => (
             <Icon
+              styles={theme === "dark" ? "bg-[#1c1c24]" : "bg-[#584EFA]"}
               key={link.name}
               {...link}
               theme={theme}
@@ -82,9 +91,11 @@ const Sidebar = () => {
 
         <button
           onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-          className="p-2 rounded transition-all"
+          className={`p-2 rounded ${theme === "dark" ? "bg-[#676e75] text-white" : "bg-[#584EFA] text-gray-200"}`}
+          // className={`w-[48px] h-[48px] rounded-[10px] bg-[#1818F2]
+          // flex justify-center items-center cursor-pointer`}
         >
-          {theme === "light" ? "🌙" : "☀️"}
+          {theme === "light" ? <IoMdMoon /> : <MdSunny />}
         </button>
       </div>
     </div>

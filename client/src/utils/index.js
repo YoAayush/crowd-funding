@@ -10,11 +10,11 @@ export const daysLeft = (deadline) => {
 };
 
 
-export const calculateBarPercentage = (goal, raisedAmount) => {
-  const percentage = Math.round((raisedAmount * 100) / goal);
+// export const calculateBarPercentage = (goal, raisedAmount) => {
+//   const percentage = Math.round((raisedAmount * 100) / goal);
 
-  return percentage;
-};
+//   return percentage;
+// };
 
 export const checkIfImage = (url, callback) => {
   const img = new Image();

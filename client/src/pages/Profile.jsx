@@ -30,32 +30,33 @@ const Profile = () => {
     profile?.profile_image ||
     `https://api.dicebear.com/7.x/identicon/svg?seed=${address}`;
 
-  // sample user profile data
-  // const profile = {
-  //   name: "Aman Raj",
-  //   bio: "Web3 enthusiast. Building decentralized futures.",
-  //   location: "Mumbai, India",
-  //   twitter: "@amanrajdev",
-  //   address: address,
-  //   joined: "January 2025",
-  //   avatar: https://api.dicebear.com/7.x/identicon/svg?seed=${address},
-  // };
-
   return (
     <div className="mt-10">
       {profile && (
-        <div className="bg-[#1f1f1f] max-w-4xl mx-auto rounded-2xl p-6 shadow-lg flex items-center gap-6 mb-10">
+        <div
+          className={`${
+            theme === "dark"
+              ? "bg-[#1f1f1f] text-white"
+              : "bg-[#C8BCFF] text-black"
+          } max-w-4xl mx-auto rounded-2xl p-6 shadow-lg flex items-center gap-6 mb-10 transition-colors duration-300`}
+        >
           <img
             src={avatarUrl}
             alt="avatar"
             className="w-24 h-24 rounded-full border-2 border-green-500"
           />
           <div>
-            <h2 className="text-2xl font-semibold text-white">
-              {profile.name}
+            <h2 className="text-2xl font-semibold">
+              {profile.name || "Unnamed User"}
             </h2>
-            <p className="text-gray-400 mt-1">{profile.bio}</p>
-            <div className="mt-3 space-y-1 text-sm text-gray-300">
+            <p
+              className={`mt-1 ${
+                theme === "dark" ? "text-gray-400" : "text-gray-700"
+              }`}
+            >
+              {profile.bio}
+            </p>
+            <div className="mt-3 space-y-1 text-sm">
               <p>📍 {profile.location || "Unknown Location"}</p>
               <p>
                 🐦{" "}
@@ -66,26 +67,28 @@ const Profile = () => {
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-400 hover:underline"
+                  className={`${
+                    theme === "dark"
+                      ? "text-blue-400 hover:underline"
+                      : "text-blue-600 hover:underline"
+                  }`}
                 >
                   {profile.twitter}
                 </a>
               </p>
               <p>
-                👛 MetaMask Wallet:{" "}
+                👛 MetaMask Wallet:
                 <br />
-                {/* {profile.address ? (
-                  <span className="text-green-400">
-                    {profile.address.slice(0, 6)}...
-                    {profile.address.slice(-4)}
-                  </span>
-                ) : (
-                  <span className="text-gray-500">Not connected</span>
-                )} */}
-                {profile?.wallet && (
-                  <span className="text-sm text-gray-400">
+                {profile?.wallet ? (
+                  <span
+                    className={`text-sm ${
+                      theme === "dark" ? "text-green-400" : "text-green-700"
+                    }`}
+                  >
                     Linked Wallet: {profile.wallet}
                   </span>
+                ) : (
+                  <span className="text-gray-400">Not connected</span>
                 )}
               </p>
               <p>
@@ -102,7 +105,7 @@ const Profile = () => {
 
       <hr
         className={`my-6 h-[1px] border-0 ${
-          theme === "dark" ? "bg-white" : "bg-gray-800"
+          theme === "dark" ? "bg-white" : "bg-gray-600"
         }`}
       />
 

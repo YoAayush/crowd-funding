@@ -1,14 +1,17 @@
-import { createCampaign, dashboard, logout, payment, profile, withdraw } from '../assets';
+// import { createCampaign, dashboard, logout, payment, profile, withdraw } from '../assets';
+
+import { CgProfile } from "react-icons/cg";
+import { MdCreateNewFolder, MdDashboard } from "react-icons/md";
 
 export const navlinks = [
   {
     name: 'dashboard',
-    imgUrl: dashboard,
+    imgUrl: MdDashboard,
     link: '/',
   },
   {
     name: 'campaign',
-    imgUrl: createCampaign,
+    imgUrl: MdCreateNewFolder,
     link: '/create-campaign',
   },
   // {
@@ -25,7 +28,7 @@ export const navlinks = [
   // },
   {
     name: 'profile',
-    imgUrl: profile,
+    imgUrl: CgProfile,
     link: '/profile',
   },
   // {

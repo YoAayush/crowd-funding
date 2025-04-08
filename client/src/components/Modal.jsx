@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useStateContext } from "../context";
 import { useNavigate } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid"; // for unique image name
+import { v4 as uuidv4 } from "uuid";
 
 const Modal = () => {
-  const { closeModal, supabase, address } = useStateContext();
+  const { closeModal, supabase, address, theme } = useStateContext();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState({
@@ -12,13 +12,13 @@ const Modal = () => {
     bio: "",
     location: "",
     twitter: "",
-    profilePicture: null, // now holds a File object
+    profilePicture: null,
   });
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "profilePicture") {
-      setProfile((prev) => ({ ...prev, profilePicture: files[0] }));
+      setProfile((prev) => ({ ...prev, profilePicture: files?.[0] || null }));
     } else {
       setProfile((prev) => ({ ...prev, [name]: value }));
     }
@@ -39,6 +39,7 @@ const Modal = () => {
 
       if (uploadError) {
         console.error("Upload error:", uploadError.message);
+        alert("Failed to upload image. Please try again.");
         setLoading(false);
         return;
       }
@@ -46,7 +47,7 @@ const Modal = () => {
       const { data: urlData } = supabase.storage
         .from("profile-images")
         .getPublicUrl(fileName);
-      imageUrl = urlData.publicUrl;
+      imageUrl = urlData?.publicUrl || "";
     }
 
     const { error } = await supabase.from("profiles").insert([
@@ -54,7 +55,7 @@ const Modal = () => {
         name: profile.name,
         bio: profile.bio,
         location: profile.location,
-        twitter: profile.twitter,
+        twitter: profile.twitter || null,
         profile_image: imageUrl,
         wallet: address,
       },
@@ -62,6 +63,7 @@ const Modal = () => {
 
     if (error) {
       console.error("Insert error:", error.message);
+      alert("Error saving profile. Please try again.");
       setLoading(false);
       return;
     }
@@ -72,10 +74,14 @@ const Modal = () => {
     navigate("/profile");
   };
 
+  const inputClass =
+    "w-full px-4 py-3 rounded-lg border bg-[#1f1f1f] border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200";
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/60">
-      <div className="relative max-w-xl w-full mx-4 sm:mx-auto bg-[#141414] p-8 rounded-2xl shadow-2xl">
-        {/* Close Button */}
+      <div
+        className={`relative max-w-xl w-full mx-4 sm:mx-auto bg-[#141414] p-8 rounded-2xl shadow-2xl`}
+      >
         <button
           onClick={closeModal}
           className="absolute top-4 right-4 text-gray-400 hover:text-white text-xl font-bold"
@@ -95,7 +101,7 @@ const Modal = () => {
             value={profile.name}
             onChange={handleChange}
             required
-            className="w-full px-4 py-3 bg-[#1f1f1f] text-white rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
+            className={inputClass}
           />
           <textarea
             name="bio"
@@ -104,7 +110,7 @@ const Modal = () => {
             value={profile.bio}
             onChange={handleChange}
             required
-            className="w-full px-4 py-3 bg-[#1f1f1f] text-white rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200 resize-none"
+            className={`${inputClass} resize-none`}
           />
           <input
             type="text"
@@ -113,23 +119,26 @@ const Modal = () => {
             value={profile.location}
             onChange={handleChange}
             required
-            className="w-full px-4 py-3 bg-[#1f1f1f] text-white rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
+            className={inputClass}
           />
           <input
             type="text"
             name="twitter"
-            placeholder="Twitter Handle"
+            placeholder="Twitter Handle (optional)"
             value={profile.twitter}
             onChange={handleChange}
-            className="w-full px-4 py-3 bg-[#1f1f1f] text-white rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
+            className={inputClass}
           />
-          <input
-            type="file"
-            name="profilePicture"
-            accept="image/*"
-            onChange={handleChange}
-            className="w-full text-white"
-          />
+          <div>
+            <label className="block text-white mb-2">Profile Picture</label>
+            <input
+              type="file"
+              name="profilePicture"
+              accept="image/*"
+              onChange={handleChange}
+              className="w-full text-white file:bg-green-500 file:text-white file:border-none file:px-4 file:py-2 file:rounded-lg file:cursor-pointer"
+            />
+          </div>
 
           <button
             type="submit"

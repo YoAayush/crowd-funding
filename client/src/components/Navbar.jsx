@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { useStateContext } from "../context";
@@ -10,6 +10,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [isActive, setIsActive] = useState("dashboard");
   const [toggleDrawer, setToggleDrawer] = useState(false);
+
   const {
     connectWallet,
     address,
@@ -18,26 +19,26 @@ const Navbar = () => {
     searchQuery,
     theme,
   } = useStateContext();
-  // const [searchQuery, setSearchQuery] = useState("");
 
-  // console.log("Address:", address);
-  // console.log("connectWallet:", connectWallet);
+  const isLightTheme = theme === "light";
 
   return (
     <div className="flex md:flex-row flex-col-reverse justify-between mb-[35px] gap-6">
+      {/* Search Bar */}
       <div
         className={`lg:flex-1 flex flex-row max-w-[458px] py-2 pl-4 pr-2 h-[52px] ${
-          theme === "dark" ? "bg-[#1c1c24]" : "bg-gray-200"
+          isLightTheme ? "bg-gray-200" : "bg-[#1c1c24]"
         } rounded-[100px]`}
       >
         <input
           type="text"
           placeholder="Search for campaigns"
-          className="flex w-full font-epilogue font-normal text-[14px] placeholder:text-[#4b5264] text-white bg-transparent outline-none"
+          className={`flex w-full font-epilogue font-normal text-[14px] placeholder:text-[#4b5264] outline-none bg-transparent ${
+            isLightTheme ? "text-black" : "text-white"
+          }`}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-
         <div className="w-[72px] h-full rounded-[20px] bg-[#4acd8d] flex justify-center items-center cursor-pointer">
           <img
             src={search}
@@ -47,10 +48,11 @@ const Navbar = () => {
         </div>
       </div>
 
+      {/* Buttons (Desktop) */}
       <div className="sm:flex hidden flex-row justify-end gap-4">
         <CustomButton
           btnType="button"
-          title={address ? "Create a campaign" : "connect"}
+          title={address ? "Create a campaign" : "Connect"}
           styles={address ? "bg-[#1dc071]" : "bg-[#8c6dfd]"}
           handleClick={() => {
             if (address) navigate("create-campaign");
@@ -60,7 +62,11 @@ const Navbar = () => {
 
         {address && (
           <button
-            className="bg-[#8c6dfd] text-white font-epilogue font-semibold text-[14px] px-4 py-2 rounded-[10px] cursor-pointer"
+            className={`${
+              isLightTheme
+                ? "bg-red-400 text-black"
+                : "bg-[#8c6dfd] text-white"
+            } font-epilogue font-semibold text-[14px] px-4 py-2 rounded-[10px] cursor-pointer`}
             onClick={() => {
               disconnect();
               navigate("/");
@@ -69,16 +75,6 @@ const Navbar = () => {
             Logout
           </button>
         )}
-
-        {/* <Link to="/profile">
-          <div className="w-[52px] h-[52px] rounded-full bg-[#2c2f32] flex justify-center items-center cursor-pointer">
-            <img
-              src={thirdweb}
-              alt="user"
-              className="w-[60%] h-[60%] object-contain"
-            />
-          </div>
-        </Link> */}
       </div>
 
       {/* Small screen navigation */}
@@ -99,7 +95,9 @@ const Navbar = () => {
         />
 
         <div
-          className={`absolute top-[60px] right-0 left-0 bg-[#1c1c24] z-10 shadow-secondary py-4 ${
+          className={`absolute top-[60px] right-0 left-0 ${
+            isLightTheme ? "bg-gray-100" : "bg-[#1c1c24]"
+          } z-10 shadow-secondary py-4 ${
             !toggleDrawer ? "-translate-y-[100vh]" : "translate-y-0"
           } transition-all duration-700`}
         >
@@ -108,7 +106,11 @@ const Navbar = () => {
               <li
                 key={link.name}
                 className={`flex p-4 ${
-                  isActive === link.name && "bg-[#3a3a43]"
+                  isActive === link.name
+                    ? isLightTheme
+                      ? "bg-gray-300"
+                      : "bg-[#3a3a43]"
+                    : ""
                 }`}
                 onClick={() => {
                   setIsActive(link.name);
@@ -125,7 +127,11 @@ const Navbar = () => {
                 />
                 <p
                   className={`ml-[20px] font-epilogue font-semibold text-[14px] ${
-                    isActive === link.name ? "text-[#1dc071]" : "text-[#808191]"
+                    isActive === link.name
+                      ? "text-[#1dc071]"
+                      : isLightTheme
+                      ? "text-gray-800"
+                      : "text-[#808191]"
                   }`}
                 >
                   {link.name}
@@ -141,7 +147,7 @@ const Navbar = () => {
               styles={address ? "bg-[#1dc071]" : "bg-[#8c6dfd]"}
               handleClick={() => {
                 if (address) navigate("create-campaign");
-                else connect();
+                else connectWallet();
               }}
             />
           </div>

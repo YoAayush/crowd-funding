@@ -1,9 +1,9 @@
-import createCampaign from './create-campaign.svg';
-import dashboard from './dashboard.svg';
+// import createCampaign from './create-campaign.svg';
+// import dashboard from './dashboard.svg';
 import logo from './logo.png';
 import logout from './logout.svg';
 import payment from './payment.svg';
-import profile from './profile.svg';
+// import profile from './profile.svg';
 import sun from './sun.svg';
 import withdraw from './withdraw.svg';
 import tagType from './type.svg';
@@ -15,12 +15,12 @@ import thirdweb from './thirdweb.png';
 
 export {
   tagType,
-  createCampaign,
-  dashboard,
+  // createCampaign,
+  // dashboard,
   logo,
   logout,
   payment,
-  profile,
+  // profile,
   sun,
   withdraw,
   search,

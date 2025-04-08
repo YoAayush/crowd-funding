@@ -9,7 +9,7 @@ import DeleteLoader from "./DeleteLoader";
 const DisplayCampaigns = ({ title, isLoading, campaigns }) => {
   const navigate = useNavigate();
   const [isDeleting, setIsDeleting] = useState(false);
-  const { handleDelete, searchQuery, theme, fetchProfile } = useStateContext();
+  const { handleDelete, searchQuery, theme } = useStateContext();
   const handleNavigate = (campaign) => {
     navigate(`/campaign-details/${campaign.title}`, { state: campaign });
   };
@@ -81,7 +81,11 @@ const DisplayCampaigns = ({ title, isLoading, campaigns }) => {
           )}
 
           {!isLoading && filteredCampaigns.length === 0 && (
-            <p className="font-epilogue font-semibold text-[14px] leading-[30px] text-[#818183]">
+            <p
+              className={`font-epilogue font-semibold text-[14px] leading-[30px] ${
+                theme === "dark" ? "text-[#818183]" : "text-white"
+              }`}
+            >
               You have not created any campigns yet
             </p>
           )}
