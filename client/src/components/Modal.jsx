@@ -115,7 +115,7 @@ const Modal = () => {
           <input
             type="text"
             name="location"
-            placeholder="Location"
+            placeholder="Location [Ex: state, country]"
             value={profile.location}
             onChange={handleChange}
             required

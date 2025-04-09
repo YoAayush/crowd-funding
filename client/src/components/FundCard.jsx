@@ -66,14 +66,14 @@ const FundCard = ({
                 theme === "dark" ? "text-[#b2b3bd]" : "text-gray-800"
               }`}
             >
-              ₹ {amountRaised}
+              ETH {amountRaised}
             </h4>
             <p
               className={`mt-[3px] font-epilogue font-normal text-[12px] leading-[18px] sm:max-w-[120px] truncate ${
                 theme === "dark" ? "text-[#808191]" : "text-gray-500"
               }`}
             >
-              Raised of ₹ {targetAmount}
+              Raised of ETH {targetAmount}
             </p>
           </div>
           <div className="flex flex-col">

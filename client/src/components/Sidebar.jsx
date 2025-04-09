@@ -27,9 +27,7 @@ const Icon = ({
   >
     {IconComponent && typeof IconComponent === "function" ? (
       <IconComponent
-        className={`w-1/2 h-1/2 ${
-          isActive !== name ? "text-gray-400" : "text-white"
-        }`}
+        className="w-1/2 h-1/2 text-white"
         size={24}
       />
     ) : (

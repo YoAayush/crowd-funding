@@ -16,12 +16,21 @@ const StateContext = createContext();
 export const StateContextProvider = ({ children }) => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [OTP_Modal, setOTP_Modal] = useState(false);
 
   const closeModal = () => {
     setIsModalOpen(false);
   };
   const openModal = () => {
     setIsModalOpen(true);
+  };
+
+  const close_OTP_Modal = () => {
+    setOTP_Modal(false);
+  };
+  const open_OTP_Modal = () => {
+    setOTP_Modal(true);
   };
 
   // useEffect(() => {
@@ -257,6 +266,11 @@ export const StateContextProvider = ({ children }) => {
         openModal,
         supabase,
         fetchProfile,
+        OTP_Modal,
+        otpVerified,
+        setOtpVerified,
+        close_OTP_Modal,
+        open_OTP_Modal
       }}
     >
       {children}
