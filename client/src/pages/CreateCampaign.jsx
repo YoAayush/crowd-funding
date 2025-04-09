@@ -69,11 +69,13 @@ const CreateCampaign = () => {
     >
       {isLoading && <Loader />}
       <div
-        className={`flex justify-center items-center p-[16px] sm:min-w-[380px] ${
-          theme === "dark" ? "bg-[#1c1c24]" : "bg-[#584EFA]"
+        className={`flex justify-center items-center p-[16px] sm:min-w-[380px] text-white ${
+          theme === "dark" ? "bg-gray-700" : "bg-[#584EFA]"
         } rounded-[10px]`}
       >
-        <h1 className="font-epilogue font-bold sm:text-[25px] text-[18px] leading-[38px] text-white">
+        <h1
+          className="font-epilogue font-bold sm:text-[25px] text-[18px] leading-[38px] "
+        >
           Start a Campaign
         </h1>
       </div>

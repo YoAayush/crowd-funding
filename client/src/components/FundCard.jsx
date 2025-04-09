@@ -30,7 +30,7 @@ const FundCard = ({
 
   return (
     <div
-      className={`sm:w-[288px] w-full rounded-[15px] cursor-pointer ${
+      className={`sm:w-[288px] w-full rounded-[15px] cursor-pointer shadow-xl ${
         theme === "dark" ? "bg-[#1c1c24]" : "bg-[#f1f1f1]"
       }`}
     >

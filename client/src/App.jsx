@@ -17,7 +17,7 @@ const App = () => {
 
       <div
         className={`relative sm:-8 p-4 ${
-          theme === "dark" ? `bg-[#13131a]` : `bg-[#9385FD]`
+          theme === "dark" ? `bg-[#13131a]` : `bg-[#e8e6ff]`
         } min-h-screen flex flex-row`}
       >
         <div className="sm:flex hidden mr-10 relative">
