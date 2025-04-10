@@ -42,6 +42,31 @@ async function sendEmailOTP(orgEmail, OTP) {
   }
 }
 
+async function sendEnquiryEmail(senderEmail, campaignOwnerEmail, message) {
+  try {
+    await transporter.sendMail({
+      from: `CrowdFund Campaign Creator <${
+        senderEmail || process.env.VITE_PRIVATE_EMAIL
+      }>`,
+      to: campaignOwnerEmail,
+      subject: "New Enquiry from Potential Backer",
+      text: `You have received a new enquiry from ${senderEmail}: ${message}`,
+      html: `
+        <h3>Dear Campaign Owner,</h3>
+        <p>You have received a new enquiry from ${senderEmail}:</p>
+        <p>${message}</p>
+        <p>If you did not initiate this request, please ignore this email or contact our support team.</p>
+        <p>Happy fundraising!</p>
+        <p>The CrowdFund Team</p>
+      `,
+    });
+    return true;
+  } catch (error) {
+    console.error("Error sending OTP email:", error);
+    return false;
+  }
+}
+
 function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString(); // Generates a 6-digit OTP
 }
@@ -97,6 +122,37 @@ app.post("/send-otp", async (req, res) => {
     }
   } catch (error) {
     console.error("Error in send-otp endpoint:", error);
+    return res.status(500).send("Internal server error");
+  }
+});
+
+app.post("/enquiry-email", async (req, res) => {
+  const { senderEmail, campaignOwnerEmail, message } = req.body;
+
+  console.log("Sender Email:", senderEmail);
+  console.log("Campaign Owner Email:", campaignOwnerEmail);
+  console.log("Message:", message);
+
+  if (req.method !== "POST") {
+    return res.status(405).send("Method Not Allowed");
+  }
+
+  try {
+    const isEmailSent = await sendEnquiryEmail(
+      senderEmail,
+      campaignOwnerEmail,
+      message
+    );
+
+    if (isEmailSent) {
+      return res
+        .status(200)
+        .json({ message: "Enquiry email sent successfully" });
+    } else {
+      return res.status(500).send("Error sending enquiry email");
+    }
+  } catch (error) {
+    console.error("Error in enquiry-email endpoint:", error);
     return res.status(500).send("Internal server error");
   }
 });

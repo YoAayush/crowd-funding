@@ -5,7 +5,7 @@ import { useState } from "react";
 import bcrypt from 'bcryptjs';
 
 const OTP_Modal_Component = ({ hashedOTP }) => {
-  const { close_OTP_Modal, setOtpVerified, theme } = useStateContext();
+  const { setOTP_Modal, setOtpVerified, theme } = useStateContext();
 
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
 
@@ -39,7 +39,7 @@ const OTP_Modal_Component = ({ hashedOTP }) => {
 
       if (isMatch) {
         setOtpVerified(true);
-        close_OTP_Modal();
+        setOTP_Modal(false);
       } else {
         alert("Invalid OTP. Please try again.");
       }
@@ -49,12 +49,12 @@ const OTP_Modal_Component = ({ hashedOTP }) => {
   return (
     <div className="fixed inset-0 bg-black shadow-xl bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
-        <button
-          onClick={close_OTP_Modal}
+        {/* <button
+          onClick={() => setOTP_Modal(false)}
           className="text-gray-500 hover:text-gray-700 text-2xl float-right"
         >
           ×
-        </button>
+        </button> */}
 
         <h2 className="text-2xl font-semibold text-gray-800 mb-4">Enter OTP</h2>
         <p className="text-gray-600 mb-6">

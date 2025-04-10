@@ -6,15 +6,81 @@ import { useStateContext } from "../context";
 import { CountBox, CustomButton, Loader } from "../components";
 import { daysLeft } from "../utils";
 import profileIcon from "../assets/profileIcon.png";
+import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
+import axios from "axios";
 
 const CampaignDetails = () => {
   const { state } = useLocation();
+  // console.log("State:", state);
   const navigate = useNavigate();
-  const { donate, getDonations, contract, address, theme } = useStateContext();
+  const { donate, getDonations, contract, address, theme, supabase, orgEmail } =
+    useStateContext();
 
   const [isLoading, setIsLoading] = useState(false);
   const [amount, setAmount] = useState("");
   const [donators, setDonators] = useState([]);
+
+  const [enquiryMessage, setEnquiryMessage] = useState("");
+  const [campaignOwnerEmail, setCampaignOwnerEmail] = useState("");
+  const [isEnquirySent, setIsEnquirySent] = useState(false);
+
+  const fetchProfile = async () => {
+    if (!address) return;
+
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("wallet", state.owner)
+        .single();
+
+      if (error) {
+        console.error("Error fetching profile:", error.message);
+      } else {
+        setCampaignOwnerEmail(data.email);
+        // console.log("Profile data:", data);
+      }
+    } catch (error) {
+      console.error("Error fetching profile:", error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile(); // Call the async function without await in useEffect
+  }, [address, state.owner]); // Dependencies for useEffect
+
+  const handleSendEnquiry = async () => {
+    if (!enquiryMessage) {
+      alert("Please fill in both email and message fields.");
+      return;
+    }
+
+    setIsEnquirySent(true);
+    try {
+      const response = await axios.post("http://localhost:3000/enquiry-email", {
+        senderEmail: orgEmail,
+        campaignOwnerEmail: campaignOwnerEmail,
+        message: enquiryMessage,
+      });
+
+      if (response.status === 200) {
+        alert("Enquiry sent successfully!");
+        setEnquiryMessage("");
+      } else {
+        alert("Failed to send enquiry. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error sending enquiry:", error.message);
+      alert("Failed to send enquiry. Please try again.");
+    } finally {
+      setIsEnquirySent(false);
+    }
+  };
+
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+    libraries: ["places"],
+  });
 
   const remainingDays = daysLeft(state.deadline);
 
@@ -51,6 +117,23 @@ const CampaignDetails = () => {
   const boxBg = isDark ? "bg-[#2c2f32]" : "bg-gray-300";
   const progressBg = isDark ? "bg-[#3a3a43]" : "bg-gray-300";
   const barColor = isDark ? "bg-[#4acd8d]" : "bg-green-400";
+
+  const [latitude, longitude] = (state.location || "19.0760, 72.8777")
+    .split(",")
+    .map(Number);
+  // console.log("Latitude:", latitude, "Longitude:", longitude);
+  // const videoLink = "https://www.youtube.com/embed/dQw4w9WgXcQ";
+  // const tags = ["Education", "Health", "Community"];
+
+  // Function to open Google Maps app
+  const openGoogleMaps = () => {
+    const url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+    window.open(url, "_blank"); // Opens in a new tab/window; mobile devices may redirect to the app
+  };
+
+  // const embedVideoLink = state.videoLink
+  //   ? state.videoLink.replace("www.youtube.com/", "www.youtube.com/embed/")
+  //   : null;
 
   return (
     <div>
@@ -93,6 +176,19 @@ const CampaignDetails = () => {
 
       <div className="mt-[60px] flex lg:flex-row flex-col gap-5">
         <div className="flex-[2] flex flex-col gap-[40px]">
+          <div className="flex flex-row items-center gap-4">
+            <h4
+              className={`font-epilogue font-semibold text-[18px] uppercase ${textColor}`}
+            >
+              Title :-
+            </h4>
+            <p
+              className={`font-epilogue font-semibold text-[25px] break-all ${textColor}`}
+            >
+              {state.title}
+            </p>
+          </div>
+
           {/* Creator */}
           <div>
             <h4
@@ -120,6 +216,40 @@ const CampaignDetails = () => {
             </div>
           </div>
 
+          {/* Location */}
+          <div>
+            <h4
+              className={`font-epilogue font-semibold text-[18px] uppercase ${textColor}`}
+            >
+              Location
+            </h4>
+            {/* <p className={`mt-2 ${mutedText}`}>
+              {state.location || "Not specified"}
+            </p> */}
+
+            {isLoaded && !isNaN(latitude) && !isNaN(longitude) ? (
+              <div className="mt-4 mb-16 h-[250px] w-full rounded-lg">
+                <GoogleMap
+                  center={{ lat: latitude, lng: longitude }}
+                  zoom={12}
+                  mapContainerStyle={{ width: "100%", height: "100%" }}
+                  // onClick={openGoogleMaps}
+                >
+                  <Marker position={{ lat: latitude, lng: longitude }} />
+                </GoogleMap>
+                {/* Button to open in Google Maps */}
+                <CustomButton
+                  btnType="button"
+                  title="Open in Google Maps"
+                  styles="w-full mt-2 bg-[#8c6dfd]"
+                  handleClick={openGoogleMaps}
+                />
+              </div>
+            ) : (
+              <p className={`mt-2 italic ${mutedText}`}>Loading map...</p>
+            )}
+          </div>
+
           {/* Story */}
           <div>
             <h4
@@ -127,14 +257,68 @@ const CampaignDetails = () => {
             >
               Story
             </h4>
-            <div className="mt-[20px]">
-              <p
-                className={`font-epilogue font-normal text-[16px] leading-[26px] text-justify ${mutedText}`}
-              >
-                {state.description}
-              </p>
+            <p
+              className={`mt-[20px] font-epilogue font-normal text-[16px] leading-[26px] text-justify ${mutedText}`}
+            >
+              {state.description}
+            </p>
+          </div>
+
+          {/* Tags */}
+          <div>
+            <h4
+              className={`font-epilogue font-semibold text-[18px] uppercase ${textColor}`}
+            >
+              Tags
+            </h4>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {/* {(state.tags || []).map((tag, idx) => (
+                <span
+                  key={idx}
+                  className={`px-3 py-1 rounded-full text-sm ${
+                    isDark
+                      ? "bg-[#2c2f32] text-white"
+                      : "bg-gray-300 text-black"
+                  }`}
+                >
+                  #{tag}
+                </span>
+              ))} */}
+              {(state.tags || []).map((tag, idx) => (
+                <span
+                  key={idx}
+                  className={`px-3 py-1 rounded-full text-sm ${
+                    isDark
+                      ? "bg-[#2c2f32] text-white"
+                      : "bg-gray-300 text-black"
+                  }`}
+                >
+                  #{tag}
+                </span>
+              ))}
             </div>
           </div>
+
+          {/* Video */}
+          {state.videoLink && (
+            <div>
+              <h4
+                className={`font-epilogue font-semibold text-[18px] uppercase ${textColor}`}
+              >
+                Video
+              </h4>
+              <div className="mt-3 w-full aspect-video">
+                <iframe
+                  src={state.videoLink}
+                  title="Campaign Video"
+                  className="w-full h-full rounded-xl"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                />
+              </div>
+            </div>
+          )}
 
           {/* Donators */}
           <div>
@@ -151,12 +335,12 @@ const CampaignDetails = () => {
                     className="flex justify-between items-center gap-4"
                   >
                     <p
-                      className={`font-epilogue font-normal text-[16px] leading-[26px] break-ll ${mutedText}`}
+                      className={`font-epilogue font-normal text-[16px] leading-[26px] break-all ${mutedText}`}
                     >
                       {index + 1}. {item.donator}
                     </p>
                     <p
-                      className={`font-epilogue font-normal text-[16px] leading-[26px] break-ll ${mutedText}`}
+                      className={`font-epilogue font-normal text-[16px] leading-[26px] ${mutedText}`}
                     >
                       {item.donation}
                     </p>
@@ -228,6 +412,108 @@ const CampaignDetails = () => {
                 />
               </div>
             )}
+          </div>
+
+          <div
+            className={`mt-[30px] flex flex-col p-4 rounded-[10px] ${bgColor}`}
+          >
+            <h4
+              className={`font-epilogue font-semibold text-[18px] leading-[30px] ${textColor}`}
+            >
+              Enquiry
+            </h4>
+            <p
+              className={`mt-[10px] font-epilogue font-medium text-[16px] leading-[24px] ${mutedText}`}
+            >
+              Send an enquiry to the campaign creator.
+            </p>
+
+            <p
+              className={`mt-[20px] font-epilogue font-medium text-[16px] leading-[24px] ${mutedText}`}
+            >
+              From :-
+            </p>
+            <input
+              type="email"
+              placeholder="Your Email"
+              className={`w-full py-[10px] sm:px-[20px] px-[15px] mt-[10px] outline-none border-[1px] border-[#3a3a43] ${
+                isDark ? "bg-transparent text-white" : "bg-white text-black"
+              } font-epilogue text-[16px] leading-[24px] placeholder:text-[#4b5264] rounded-[10px]`}
+              value={orgEmail}
+              disabled
+              // onChange={(e) => setEnquiryEmail(e.target.value)}
+            />
+
+            <p
+              className={`mt-[20px] font-epilogue font-medium text-[16px] leading-[24px] ${mutedText}`}
+            >
+              To :-
+            </p>
+            <input
+              type="email"
+              placeholder="Creator Email"
+              className={`w-full py-[10px] sm:px-[20px] px-[15px] mt-[10px] outline-none border-[1px] border-[#3a3a43] ${
+                isDark ? "bg-transparent text-white" : "bg-white text-black"
+              } font-epilogue text-[16px] leading-[24px] placeholder:text-[#4b5264] rounded-[10px]`}
+              value={campaignOwnerEmail}
+              disabled
+              // onChange={(e) => setEnquiryEmail(e.target.value)}
+            />
+            <p
+              className={`mt-[20px] font-epilogue font-medium text-[16px] leading-[24px] ${mutedText}`}
+            >
+              Enquiry Message :-
+            </p>
+            <textarea
+              placeholder="Your Message"
+              className={`w-full py-[10px] sm:px-[20px] px-[15px] mt-[10px] outline-none border-[1px] border-[#3a3a43] ${
+                isDark ? "bg-transparent text-white" : "bg-white text-black"
+              } font-epilogue text-[16px] leading-[24px] placeholder:text-[#4b5264] rounded-[10px] h-[100px] resize-none`}
+              value={enquiryMessage}
+              onChange={(e) => setEnquiryMessage(e.target.value)}
+            />
+            {/* <CustomButton
+              btnType="button"
+              title="Send Enquiry"
+              styles="w-full bg-[#6adf8d] mt-[20px]"
+              handleClick={handleSendEnquiry}
+            /> */}
+            <button
+              className={`mt-6 w-full flex justify-center items-center gap-2 ${
+                isEnquirySent
+                  ? "bg-green-400 cursor-not-allowed"
+                  : "bg-green-500 hover:bg-green-600"
+              } text-white font-semibold py-3 rounded-lg transition duration-200`}
+              disabled={isEnquirySent}
+            >
+              {isEnquirySent ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v8z"
+                    ></path>
+                  </svg>
+                  Sending Email...
+                </>
+              ) : (
+                "Send Enquiry"
+              )}
+            </button>
           </div>
         </div>
       </div>

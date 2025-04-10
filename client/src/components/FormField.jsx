@@ -9,9 +9,8 @@ const FormField = ({
   isTextArea,
   value,
   handleChange,
-  sendOtp,
 }) => {
-  const { theme, OTP_Modal, } = useStateContext();
+  const { theme, orgEmail, } = useStateContext();
 
   return (
     <label className="flex-1 w-full flex flex-col">
@@ -35,22 +34,15 @@ const FormField = ({
         <div className="flex flex-col sm:flex-row gap-3 w-full">
           <input
             required
-            value={value}
-            onChange={handleChange}
-            type={inputType}
-            placeholder={placeholder}
+            value={orgEmail}
+            disabled
+            // onChange={handleChange}
+            // type={inputType}
+            // placeholder={placeholder}
             className={`w-full py-[15px] px-[15px] outline-none border border-[#3a3a43] bg-transparent font-epilogue ${
               theme === "dark" ? "text-white" : "text-gray-900"
             } text-[14px] placeholder:text-[#4b5264] rounded-[10px]`}
           />
-          <button
-            type="button"
-            onClick={sendOtp}
-            disabled={OTP_Modal}
-            className="w-full sm:w-auto py-[5px] px-8 bg-blue-500 text-white rounded-[10px] hover:bg-blue-600 transition-all duration-200"
-          >
-            {OTP_Modal ? "OTP Sent" : "Send OTP"}
-          </button>
         </div>
       ) : (
         <input

@@ -5,15 +5,20 @@ import { Sidebar, Navbar } from "./components";
 import { CampaignDetails, CreateCampaign, Home, Profile } from "./pages";
 import { useStateContext } from "./context";
 import Modal from "./components/Modal";
+import OTP_Modal_Component from "./components/OTP_Modal";
 
 const App = () => {
-  const { theme, isModalOpen } = useStateContext();
+  const { theme, isModalOpen, OTP_Modal, otpVerified, hashedOtp } = useStateContext();
+  
   return (
     <>
       {/* {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50" />
       )} */}
       {isModalOpen && <Modal />}
+      {OTP_Modal && !otpVerified && (
+        <OTP_Modal_Component hashedOTP={hashedOtp} />
+      )}
 
       <div
         className={`relative sm:-8 p-4 ${

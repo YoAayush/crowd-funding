@@ -1,5 +1,6 @@
 import React from "react";
-import { tagType, thirdweb } from "../assets";
+// import { tagType, thirdweb } from "../assets";
+import profileIcon from "../assets/profileIcon.png";
 import { daysLeft } from "../utils";
 import { useStateContext } from "../context";
 
@@ -94,7 +95,7 @@ const FundCard = ({
             }`}
           >
             <img
-              src={thirdweb}
+              src={profileIcon}
               alt="user"
               className="w-1/2 h-1/2 object-contain"
             />

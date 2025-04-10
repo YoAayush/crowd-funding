@@ -2,9 +2,19 @@ import React, { useState } from "react";
 import { useStateContext } from "../context";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import axios from "axios";
 
 const Modal = () => {
-  const { closeModal, supabase, address, theme } = useStateContext();
+  const {
+    closeModal,
+    supabase,
+    address,
+    theme,
+    OTP_Modal,
+    setOTP_Modal,
+    setHashedOtp,
+    otpVerified,
+  } = useStateContext();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState({
@@ -12,8 +22,27 @@ const Modal = () => {
     bio: "",
     location: "",
     twitter: "",
+    email: "",
     profilePicture: null,
   });
+
+  const sendOtp = async () => {
+    setOTP_Modal(true);
+
+    console.log("Sending OTP to:", profile.email);
+    try {
+      const result = await axios.post("http://localhost:3000/send-otp", {
+        orgEmail: profile.email,
+      });
+      alert(`OTP sent to ${profile.email}`);
+
+      setHashedOtp(result.data.hashedOTP);
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      alert("Failed to send OTP. Please try again.");
+      setOTP_Modal(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -26,6 +55,12 @@ const Modal = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!profile.name || !profile.bio || !profile.location || !profile.email) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
     setLoading(true);
 
     let imageUrl = "";
@@ -58,6 +93,7 @@ const Modal = () => {
         twitter: profile.twitter || null,
         profile_image: imageUrl,
         wallet: address,
+        email: profile.email,
       },
     ]);
 
@@ -82,12 +118,12 @@ const Modal = () => {
       <div
         className={`relative max-w-xl w-full mx-4 sm:mx-auto bg-[#141414] p-8 rounded-2xl shadow-2xl`}
       >
-        <button
+        {/* <button
           onClick={closeModal}
           className="absolute top-4 right-4 text-gray-400 hover:text-white text-xl font-bold"
         >
           &times;
-        </button>
+        </button> */}
 
         <h2 className="text-2xl font-bold text-white mb-6 text-center">
           Your Profile
@@ -103,6 +139,30 @@ const Modal = () => {
             required
             className={inputClass}
           />
+          <div className="flex flex-col sm:flex-row gap-3 w-full">
+            <input
+              type="email"
+              name="email"
+              required
+              value={profile.email}
+              onChange={handleChange}
+              placeholder="Organisation Email Address"
+              className={inputClass}
+            />
+            <button
+              type="button"
+              onClick={sendOtp}
+              disabled={OTP_Modal}
+              className="w-full sm:w-auto py-[5px] px-8 bg-blue-500 text-white rounded-[10px] hover:bg-blue-600 transition-all duration-200"
+            >
+              {OTP_Modal ? "OTP Sent" : "Send OTP"}
+            </button>
+          </div>
+          {otpVerified && (
+            <div className="flex items-center justify-center mt-2 text-green-500 font-semibold">
+              ✅ Email Verified! You can now save your profile.
+            </div>
+          )}
           <textarea
             name="bio"
             placeholder="Bio"

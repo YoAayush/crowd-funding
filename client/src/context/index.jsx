@@ -18,6 +18,8 @@ export const StateContextProvider = ({ children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
   const [OTP_Modal, setOTP_Modal] = useState(false);
+  const [orgEmail, setOrgEmail] = useState("");
+  const [hashedOtp, setHashedOtp] = useState("");
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -25,17 +27,6 @@ export const StateContextProvider = ({ children }) => {
   const openModal = () => {
     setIsModalOpen(true);
   };
-
-  const close_OTP_Modal = () => {
-    setOTP_Modal(false);
-  };
-  const open_OTP_Modal = () => {
-    setOTP_Modal(true);
-  };
-
-  // useEffect(() => {
-  //   console.log("modal state changed:", isModalOpen);
-  // }, [isModalOpen]);
 
   // Initialize contract
   const { contract, isLoading } = useContract(
@@ -125,6 +116,9 @@ export const StateContextProvider = ({ children }) => {
           form.ownerName, // onwer name
           form.title, // title
           form.description, // description
+          form.location,
+          form.videoLink,
+          form.tags,
           // ethers.utils.parseEther(targetInEther), // target (formatted)
           form.target, // target (in ETHer)
           Math.floor(new Date(form.deadline).getTime() / 1000), // Convert to seconds
@@ -155,6 +149,9 @@ export const StateContextProvider = ({ children }) => {
       image: campaign.image,
       pId: i,
       isDeleted: campaign.isDeleted,
+      location: campaign.location,
+      videoLink: campaign.videoLink,
+      tags: campaign.tags,
     }));
 
     return parsedCampaigns;
@@ -267,10 +264,13 @@ export const StateContextProvider = ({ children }) => {
         supabase,
         fetchProfile,
         OTP_Modal,
+        setOTP_Modal,
         otpVerified,
         setOtpVerified,
-        close_OTP_Modal,
-        open_OTP_Modal
+        orgEmail,
+        setOrgEmail,
+        hashedOtp,
+        setHashedOtp,
       }}
     >
       {children}

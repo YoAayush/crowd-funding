@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ethers } from "ethers";
 
@@ -8,8 +8,6 @@ import { CustomButton, FormField } from "../components";
 import Loader from "../components/Loader";
 import { checkIfImage } from "../utils";
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
-import axios from "axios";
-import OTP_Modal_Component from "../components/OTP_Modal";
 
 const mapContainerStyle = {
   width: "100%",
@@ -20,8 +18,6 @@ const center = {
   lat: 28.6139, // Default: New Delhi
   lng: 77.209,
 };
-
-const libraries = ["places"];
 
 const predefinedTags = [
   "Education",
@@ -42,14 +38,20 @@ const predefinedTags = [
 const CreateCampaign = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const { createCampaign, theme, fetchProfile, otpVerified, OTP_Modal, open_OTP_Modal } =
-    useStateContext();
+  const {
+    createCampaign,
+    theme,
+    fetchProfile,
+    otpVerified,
+    setOtpVerified,
+    orgEmail
+  } = useStateContext();
   const [location, setLocation] = useState({ lat: null, lng: null });
   const [form, setForm] = useState({
     // ownerName: '',
     title: "",
     orgName: "",
-    orgEmail: "",
+    orgEmail: orgEmail,
     description: "",
     target: "",
     deadline: "",
@@ -59,38 +61,14 @@ const CreateCampaign = () => {
     tags: [],
   });
 
-  // const [otpSent, setOtpSent] = useState(false);
-  const [hashedOtp, setHashedOtp] = useState("");
-
-  const sendOtp = async () => {
-    if (!form.orgEmail) {
-      alert("Please enter your organisation email first.");
-      return;
-    }
-
-    open_OTP_Modal();
-
-    console.log("Sending OTP to:", form.orgEmail);
-    try {
-      const result = await axios.post("http://localhost:3000/send-otp", {
-        orgEmail: form.orgEmail,
-      });
-      alert(`OTP sent to ${form.orgEmail}`);
-
-      setHashedOtp(result.data.hashedOTP);
-      setOtpSent(true);
-    } catch (error) {
-      console.error("Error sending OTP:", error);
-      alert("Failed to send OTP. Please try again.");
-    }
-  };
+  const autocompleteRef = useRef(null); // Ref for Autocomplete input
 
   const handleFormFieldChange = (fieldName, e) => {
     setForm({ ...form, [fieldName]: e.target.value });
   };
 
   const toggleTag = (tag) => {
-    setCampaign((prev) => {
+    setForm((prev) => {
       const hasTag = prev.tags.includes(tag);
       return {
         ...prev,
@@ -120,6 +98,7 @@ const CreateCampaign = () => {
         await createCampaign(FinalData);
         setIsLoading(false);
         navigate("/");
+        setOtpVerified(false);
       } else {
         alert("Provide valid image URL");
         setForm({ ...form, image: "" });
@@ -140,10 +119,45 @@ const CreateCampaign = () => {
   //   }
   // }, [form.target]);
 
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+    libraries: ["places"],
+  });
+
+  useEffect(() => {
+    // console.log("Location:", location);
+    // console.log("isloaded:", isLoaded);
+    // console.log(autocompleteRef.current);
+    if (isLoaded && !autocompleteRef.current) {
+      const autocomplete = new window.google.maps.places.Autocomplete(
+        document.getElementById("locationInput"),
+        {
+          types: ["geocode"], // Restrict to geographic locations
+          componentRestrictions: { country: "in" }, // Optional: Restrict to India
+        }
+      );
+
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        if (place.geometry && place.geometry.location) {
+          const lat = place.geometry.location.lat();
+          const lng = place.geometry.location.lng();
+          setLocation({ lat, lng });
+          setForm((prev) => ({
+            ...prev,
+            location: `${lat},${lng}`,
+          }));
+        } else {
+          alert("No location details available for the selected place.");
+        }
+      });
+
+      autocompleteRef.current = autocomplete;
+    }
+  }, [isLoaded, form]);
+
   return (
     <>
-      {OTP_Modal && !otpVerified && <OTP_Modal_Component hashedOTP={hashedOtp} />}
-
       <div
         className={`${
           theme === "dark" ? "bg-[#1c1c24]" : "bg-[#C8BCFF]"
@@ -197,12 +211,13 @@ const CreateCampaign = () => {
                 inputType="email"
                 value={form.orgEmail}
                 handleChange={(e) => handleFormFieldChange("orgEmail", e)}
-                sendOtp={sendOtp}
               />
             </div>
 
-            {otpVerified && (
-              <p className="text-green-600 font-semibold">✅ OTP Verified</p>
+            {form.orgEmail && (
+              <p className="text-green-600 font-semibold">
+                ✅ Organisation Email Verified
+              </p>
             )}
           </div>
 
@@ -240,25 +255,34 @@ const CreateCampaign = () => {
             Select Campaign Location *
           </label>
 
-          {useLoadScript({
-            googleMapsApiKey: "AIzaSyBEmTMsBcalkfogGu3Jud1r4m6xFrTOOAI",
-            libraries,
-          }).isLoaded ? (
-            <GoogleMap
-              mapContainerStyle={mapContainerStyle}
-              zoom={5}
-              center={center}
-              onClick={(e) => {
-                const lat = e.latLng.lat();
-                const lng = e.latLng.lng();
-                setLocation({ lat, lng });
-                setForm({ ...form, location: `${lat},${lng}` });
-              }}
-            >
-              {location.lat && (
-                <Marker position={{ lat: location.lat, lng: location.lng }} />
-              )}
-            </GoogleMap>
+          {isLoaded ? (
+            <>
+              <input
+                id="locationInput"
+                type="text"
+                placeholder="Search for a location (e.g., New Delhi, India)"
+                className={`w-full py-[15px] px-[15px] outline-none border border-[#3a3a43] bg-transparent font-epilogue ${
+                  theme === "dark" ? "text-white" : "text-gray-900"
+                } text-[14px] placeholder:text-[#4b5264] rounded-[10px]`}
+                onFocus={() => {
+                  if (autocompleteRef.current) {
+                    window.google.maps.event.trigger(
+                      autocompleteRef.current,
+                      "focus"
+                    );
+                  }
+                }}
+              />
+              <GoogleMap
+                mapContainerStyle={mapContainerStyle}
+                zoom={location.lat ? 12 : 5}
+                center={location.lat ? location : center}
+              >
+                {location.lat && (
+                  <Marker position={{ lat: location.lat, lng: location.lng }} />
+                )}
+              </GoogleMap>
+            </>
           ) : (
             <p>Loading Map...</p>
           )}
@@ -269,7 +293,7 @@ const CreateCampaign = () => {
         </div> */}
 
           <FormField
-            labelName="Campaign Video Link (Optional)"
+            labelName="Campaign Video Link *"
             placeholder="Place video URL of your campaign"
             inputType="url"
             value={form.videoLink}
