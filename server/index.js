@@ -79,14 +79,14 @@ app.post("/send-otp", async (req, res) => {
   const { orgEmail } = req.body;
 
   // List of common public email domains to block
-  const blockedDomains = [
-    "gmail.com",
-    "yahoo.com",
-    "hotmail.com",
-    "outlook.com",
-    "aol.com",
-    "icloud.com",
-  ];
+  // const blockedDomains = [
+  //   "gmail.com",
+  //   "yahoo.com",
+  //   "hotmail.com",
+  //   "outlook.com",
+  //   "aol.com",
+  //   "icloud.com",
+  // ];
 
   console.log("Received email:", orgEmail);
 
@@ -94,15 +94,15 @@ app.post("/send-otp", async (req, res) => {
     return res.status(400).send("Valid organization email is required");
   }
 
-  const domain = orgEmail.split("@")[1];
+  // const domain = orgEmail.split("@")[1];
 
-  if (!domain || blockedDomains.includes(domain.toLowerCase())) {
-    return res
-      .status(400)
-      .send(
-        "Please use an organization email, not a public email service (e.g., Gmail, Yahoo)"
-      );
-  }
+  // if (!domain || blockedDomains.includes(domain.toLowerCase())) {
+  //   return res
+  //     .status(400)
+  //     .send(
+  //       "Please use an organization email, not a public email service (e.g., Gmail, Yahoo)"
+  //     );
+  // }
 
   try {
     const OTP = generateOTP();

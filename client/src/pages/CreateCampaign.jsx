@@ -81,7 +81,7 @@ const CreateCampaign = () => {
     e.preventDefault();
 
     if (!otpVerified) {
-      alert("Please verify the OTP before submitting.");
+      alert("Please Submit the Profile & verify the Organisation Email before submitting.");
       return;
     }
 

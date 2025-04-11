@@ -10,6 +10,7 @@ const Profile = () => {
     theme,
     fetchProfile,
     setOrgEmail,
+    setOtpVerified
   } = useStateContext();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -31,6 +32,7 @@ const Profile = () => {
         const data = await fetchProfile();
         setProfile(data);
         setOrgEmail(data.email);
+        setOtpVerified(true);
       } catch (error) {
         console.error("Error loading profile data:", error);
       } finally {

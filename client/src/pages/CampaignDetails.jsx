@@ -177,13 +177,13 @@ const CampaignDetails = () => {
       <div className="mt-[60px] flex lg:flex-row flex-col gap-5">
         <div className="flex-[2] flex flex-col gap-[40px]">
           <div className="flex flex-row items-center gap-4">
-            <h4
+            {/* <h4
               className={`font-epilogue font-semibold text-[18px] uppercase ${textColor}`}
             >
               Title :-
-            </h4>
+            </h4> */}
             <p
-              className={`font-epilogue font-semibold text-[25px] break-all ${textColor}`}
+              className={`font-epilogue font-semibold text-[22px] break-all ${textColor}`}
             >
               {state.title}
             </p>
@@ -192,7 +192,7 @@ const CampaignDetails = () => {
           {/* Creator */}
           <div>
             <h4
-              className={`font-epilogue font-semibold text-[18px] uppercase ${textColor}`}
+              className={`font-epilogue font-semibold text-[16px] uppercase ${textColor}`}
             >
               Creator
             </h4>
@@ -219,7 +219,7 @@ const CampaignDetails = () => {
           {/* Location */}
           <div>
             <h4
-              className={`font-epilogue font-semibold text-[18px] uppercase ${textColor}`}
+              className={`font-epilogue font-semibold text-[16px] uppercase ${textColor}`}
             >
               Location
             </h4>
@@ -253,7 +253,7 @@ const CampaignDetails = () => {
           {/* Story */}
           <div>
             <h4
-              className={`font-epilogue font-semibold text-[18px] uppercase ${textColor}`}
+              className={`font-epilogue font-semibold text-[16px] uppercase ${textColor}`}
             >
               Story
             </h4>
@@ -267,7 +267,7 @@ const CampaignDetails = () => {
           {/* Tags */}
           <div>
             <h4
-              className={`font-epilogue font-semibold text-[18px] uppercase ${textColor}`}
+              className={`font-epilogue font-semibold text-[16px] uppercase ${textColor}`}
             >
               Tags
             </h4>
@@ -303,7 +303,7 @@ const CampaignDetails = () => {
           {state.videoLink && (
             <div>
               <h4
-                className={`font-epilogue font-semibold text-[18px] uppercase ${textColor}`}
+                className={`font-epilogue font-semibold text-[16px] uppercase ${textColor}`}
               >
                 Video
               </h4>
@@ -323,7 +323,7 @@ const CampaignDetails = () => {
           {/* Donators */}
           <div>
             <h4
-              className={`font-epilogue font-semibold text-[18px] uppercase ${textColor}`}
+              className={`font-epilogue font-semibold text-[16px] uppercase ${textColor}`}
             >
               Donators
             </h4>
