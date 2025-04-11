@@ -77,6 +77,8 @@ const CreateCampaign = () => {
     });
   };
 
+  // console.log(otpVerified)
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -98,7 +100,6 @@ const CreateCampaign = () => {
         await createCampaign(FinalData);
         setIsLoading(false);
         navigate("/");
-        setOtpVerified(false);
       } else {
         alert("Provide valid image URL");
         setForm({ ...form, image: "" });
