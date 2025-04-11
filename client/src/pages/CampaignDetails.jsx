@@ -485,6 +485,7 @@ const CampaignDetails = () => {
                   : "bg-green-500 hover:bg-green-600"
               } text-white font-semibold py-3 rounded-lg transition duration-200`}
               disabled={isEnquirySent}
+              onClick={handleSendEnquiry}
             >
               {isEnquirySent ? (
                 <>
