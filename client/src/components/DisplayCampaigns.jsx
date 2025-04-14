@@ -114,7 +114,7 @@ const DisplayCampaigns = ({ title, isLoading, campaigns }) => {
             className={`p-2 rounded-md ${
               theme === "dark"
                 ? "bg-[#2c2f32] text-white"
-                : "bg-gray-200 text-[#13131a]"
+                : "bg-gray-300 text-[#13131a] shadow-xl"
             }`}
           >
             <option value="All">All</option>
