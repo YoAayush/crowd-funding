@@ -83,6 +83,7 @@ const CampaignDetails = () => {
   });
 
   const remainingDays = daysLeft(state.deadline);
+  const isExpired = remainingDays <= 0;
 
   const fetchDonators = async () => {
     const data = await getDonations(state.pId);
@@ -371,6 +372,20 @@ const CampaignDetails = () => {
             {isTargetReached ? (
               <div className="w-full bg-green-600 text-white text-center py-3 rounded-[10px] font-semibold text-[18px] animate-pulse">
                 🎯 Target Reached! Thank you for the support.
+              </div>
+            ) : isExpired ? (
+              <div className="flex flex-col">
+                <button
+                  className={`px-4 py-2 rounded-lg transition ${
+                    isExpired
+                      ? "bg-gray-400 text-white cursor-default"
+                      : theme === "dark"
+                      ? "bg-blue-500 hover:bg-blue-600 text-white"
+                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                  }`}
+                >
+                  Expired ( Funding Closed )
+                </button>
               </div>
             ) : (
               <div className="mt-[30px]">

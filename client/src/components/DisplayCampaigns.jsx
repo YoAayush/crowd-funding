@@ -63,7 +63,8 @@ const DisplayCampaigns = ({ title, isLoading, campaigns }) => {
       ? filteredCampaigns
       : filteredCampaigns.filter(
           // (campaign) => campaign.category === selectedCategory
-          (campaign) => campaign.tags.includes(selectedCategory)
+          (campaign) => Array.isArray(campaign.tags) &&
+            campaign.tags.includes(selectedCategory)
         );
 
   const handleDeleteClick = async (id) => {
